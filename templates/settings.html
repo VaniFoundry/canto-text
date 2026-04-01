@@ -1,0 +1,369 @@
+<style>
+  /* Extra scoping handled in styles.css — these are fallbacks */
+  #canto-text-config form { all: initial; display: block; }
+  #canto-text-config form * { box-sizing: border-box; }
+</style>
+
+<form class="canto-cfg-container">
+
+  <!-- ═══════════════════════════════════════════
+       SONG SOURCE
+  ══════════════════════════════════════════════ -->
+  <div class="canto-cfg-section">
+    <div class="canto-cfg-header">♪ Song Source</div>
+
+    <!-- MODE TABS -->
+    <div class="canto-mode-tabs">
+      <button type="button" class="canto-mode-tab {{#unless playlistSoundId}}active{{/unless}}"
+              onclick="cantoSetMode('url', this)">URL / File</button>
+      <button type="button" class="canto-mode-tab {{#if playlistSoundId}}active{{/if}}"
+              onclick="cantoSetMode('playlist', this)">Foundry Playlist</button>
+    </div>
+
+    <!-- URL MODE -->
+    <div id="canto-mode-url" class="canto-mode-panel {{#unless playlistSoundId}}visible{{/unless}}">
+      <div class="canto-cfg-row">
+        <label>Song URL / Path</label>
+        <input type="text" name="songUrl" class="canto-cfg-input-wide"
+               value="{{songUrl}}"
+               placeholder="https://... or data/music/my-song.ogg">
+      </div>
+      <div class="canto-cfg-hint">
+        Supports any HTTP/HTTPS URL or a Foundry <code>data/</code> path.
+        Leave empty to show lyrics without audio.
+      </div>
+    </div>
+
+    <!-- PLAYLIST MODE -->
+    <div id="canto-mode-playlist" class="canto-mode-panel {{#if playlistSoundId}}visible{{/if}}">
+      {{#if hasPlaylists}}
+        <div class="canto-cfg-row">
+          <label>Playlist Sound</label>
+          <select name="playlistSoundId" id="canto-playlist-select" class="canto-cfg-select">
+            <option value="">— None selected —</option>
+            {{#each playlistSounds}}
+              <option value="{{id}}" {{#if selected}}selected{{/if}}>{{label}}</option>
+            {{/each}}
+          </select>
+        </div>
+        <div class="canto-cfg-hint">
+          Select a sound from any Foundry playlist. Canto Text will sync lyrics automatically
+          whenever you play or pause it — from the toolbar <em>or</em> from the Playlists panel.
+        </div>
+      {{else}}
+        <div class="canto-cfg-hint" style="color:#e85555;">
+          ⚠ No playlists found. Create a playlist with at least one sound in
+          <strong>Playlists</strong> first, then re-open this config.
+        </div>
+        <input type="hidden" name="playlistSoundId" value="">
+      {{/if}}
+    </div>
+
+  </div>
+
+  <div class="canto-cfg-divider"></div>
+
+  <!-- ═══════════════════════════════════════════
+       LRC IMPORTER
+  ══════════════════════════════════════════════ -->
+  <div class="canto-cfg-section">
+    <div class="canto-cfg-header">⬆ Import .lrc File</div>
+
+    <div id="canto-lrc-dropzone"
+         ondragover="event.preventDefault();this.classList.add('drag-over')"
+         ondragleave="this.classList.remove('drag-over')"
+         ondrop="cantoHandleLrcDrop(event)">
+      <span id="canto-lrc-dropzone-text">Drag &amp; drop a <strong>.lrc</strong> file here, or click to browse</span>
+      <input type="file" id="canto-lrc-file-input" accept=".lrc,.txt" style="display:none"
+             onchange="cantoHandleLrcFile(this.files[0])">
+    </div>
+    <div id="canto-lrc-status" class="canto-cfg-hint" style="margin-top:6px;display:none;"></div>
+  </div>
+
+  <div class="canto-cfg-divider"></div>
+
+  <!-- ═══════════════════════════════════════════
+       LYRICS EDITOR
+  ══════════════════════════════════════════════ -->
+  <div class="canto-cfg-section">
+    <div class="canto-cfg-header">♩ Lyric Sheet  <span style="font-weight:normal;text-transform:none;letter-spacing:0;color:#6a5a8a;">(JSON)</span></div>
+
+    <label style="display:block;color:#ddd4f0;font-size:12px;font-weight:600;margin-bottom:4px;">
+      Timed Lyrics Array
+    </label>
+    <textarea name="lyricsJson" class="canto-cfg-textarea" rows="14"
+              id="canto-lyrics-editor"
+              oninput="cantoValidateLyrics(this)">{{lyricsJson}}</textarea>
+    <div class="canto-lyric-error" id="canto-lyric-error"></div>
+
+    <div class="canto-cfg-hint">
+      Each entry: <code>{ "t": &lt;seconds&gt;, "text": "lyric line" }</code><br>
+      Lines are sorted by time automatically. Importing an .lrc will overwrite this field.<br>
+      <code>[{ "t": 0, "text": "♪ Intro" }, { "t": 4.5, "text": "First verse" }]</code>
+    </div>
+  </div>
+
+  <div class="canto-cfg-divider"></div>
+
+  <!-- ═══════════════════════════════════════════
+       APPEARANCE
+  ══════════════════════════════════════════════ -->
+  <div class="canto-cfg-section">
+    <div class="canto-cfg-header">✦ Appearance</div>
+
+    <div class="canto-cfg-row">
+      <label>Font Size (px)</label>
+      <input type="number" name="fontSize" class="canto-cfg-input" value="{{fontSize}}" min="8" max="200">
+    </div>
+
+    <div class="canto-cfg-row">
+      <label>Font Color</label>
+      <div class="canto-cfg-color-row">
+        <input type="color" name="color" class="canto-cfg-color-swatch" value="{{color}}"
+               oninput="this.nextElementSibling.value=this.value">
+        <input type="text" class="canto-cfg-color-hex" value="{{color}}"
+               placeholder="#ff3333"
+               oninput="this.previousElementSibling.value=this.value">
+      </div>
+    </div>
+
+    <div class="canto-cfg-row">
+      <label>Font Family</label>
+      <select name="fontFamilyPreset" id="canto-font-preset" class="canto-cfg-select"
+              onchange="
+                var ci = document.getElementById('canto-custom-font-wrap');
+                var hv = document.getElementById('canto-font-family-value');
+                var inp = document.getElementById('canto-custom-font-input');
+                if (this.value === '__custom__') {
+                  ci.style.display='flex';
+                  hv.value = inp.value || '';
+                } else {
+                  ci.style.display='none';
+                  hv.value = this.value;
+                }
+              ">
+        <option value="serif"             {{#if (ct_eq fontFamily "serif")             }}selected{{/if}}>Serif</option>
+        <option value="sans-serif"        {{#if (ct_eq fontFamily "sans-serif")        }}selected{{/if}}>Sans-Serif</option>
+        <option value="monospace"         {{#if (ct_eq fontFamily "monospace")         }}selected{{/if}}>Monospace</option>
+        <option value="Signika"           {{#if (ct_eq fontFamily "Signika")           }}selected{{/if}}>Signika (Foundry UI)</option>
+        <option value="Modesto Condensed" {{#if (ct_eq fontFamily "Modesto Condensed") }}selected{{/if}}>Modesto Condensed</option>
+        <option value="Cinzel"            {{#if (ct_eq fontFamily "Cinzel")            }}selected{{/if}}>Cinzel</option>
+        <option value="Cinzel Decorative" {{#if (ct_eq fontFamily "Cinzel Decorative") }}selected{{/if}}>Cinzel Decorative</option>
+        <option value="Crimson Text"      {{#if (ct_eq fontFamily "Crimson Text")      }}selected{{/if}}>Crimson Text</option>
+        <option value="Creepster"         {{#if (ct_eq fontFamily "Creepster")         }}selected{{/if}}>Creepster</option>
+        <option value="__custom__">✎ Custom font...</option>
+      </select>
+    </div>
+
+    <!-- hidden custom font row -->
+    <div id="canto-custom-font-wrap" style="display:none;align-items:center;gap:12px;margin-bottom:8px;">
+      <label style="color:#ddd4f0;font-size:12px;font-weight:600;flex:1;">Font Name</label>
+      <input type="text" id="canto-custom-font-input"
+             style="background:#0a0a14;border:1px solid #b08fe8;color:#ddd4f0;padding:5px 8px;font-size:12px;flex:1.2;"
+             placeholder="e.g. Pirata One, Roboto..."
+             oninput="document.getElementById('canto-font-family-value').value=this.value">
+    </div>
+    <input type="hidden" name="fontFamily" id="canto-font-family-value" value="{{fontFamily}}">
+
+    <div class="canto-cfg-row">
+      <label>Auto Scale Long Text</label>
+      <input type="checkbox" name="autoScaleLongText" class="canto-cfg-checkbox" {{#if autoScaleLongText}}checked{{/if}}>
+    </div>
+    <div class="canto-cfg-row">
+      <label>Max Simultaneous Lines</label>
+      <input type="number" name="maxSimultaneous" class="canto-cfg-input" value="{{maxSimultaneous}}" min="1" max="20">
+    </div>
+  </div>
+
+  <div class="canto-cfg-divider"></div>
+
+  <!-- ═══════════════════════════════════════════
+       POSITION & ROTATION
+  ══════════════════════════════════════════════ -->
+  <div class="canto-cfg-section">
+    <div class="canto-cfg-header">↻ Position &amp; Rotation</div>
+
+    <div class="canto-cfg-row">
+      <label>Random Angle</label>
+      <input type="checkbox" name="randomAngle" class="canto-cfg-checkbox" {{#if randomAngle}}checked{{/if}}>
+    </div>
+    <div class="canto-cfg-row">
+      <label>Max Angle (degrees)</label>
+      <input type="number" name="maxAngle" class="canto-cfg-input" value="{{maxAngle}}" min="0" max="180">
+    </div>
+  </div>
+
+  <div class="canto-cfg-divider"></div>
+
+  <!-- ═══════════════════════════════════════════
+       OUTLINE
+  ══════════════════════════════════════════════ -->
+  <div class="canto-cfg-section">
+    <div class="canto-cfg-header">◻ Outline</div>
+
+    <div class="canto-cfg-row">
+      <label>Enable Outline</label>
+      <input type="checkbox" name="outlineEnabled" class="canto-cfg-checkbox" {{#if outlineEnabled}}checked{{/if}}>
+    </div>
+    <div class="canto-cfg-row">
+      <label>Outline Color</label>
+      <div class="canto-cfg-color-row">
+        <input type="color" name="outlineColor" class="canto-cfg-color-swatch" value="{{outlineColor}}"
+               oninput="this.nextElementSibling.value=this.value">
+        <input type="text" class="canto-cfg-color-hex" value="{{outlineColor}}"
+               placeholder="#000000"
+               oninput="this.previousElementSibling.value=this.value">
+      </div>
+    </div>
+    <div class="canto-cfg-row">
+      <label>Outline Thickness (px)</label>
+      <input type="number" name="outlineThickness" class="canto-cfg-input" value="{{outlineThickness}}" min="1" max="10">
+    </div>
+  </div>
+
+  <div class="canto-cfg-divider"></div>
+
+  <!-- ═══════════════════════════════════════════
+       SHAKEY TEXT
+  ══════════════════════════════════════════════ -->
+  <div class="canto-cfg-section">
+    <div class="canto-cfg-header">〰 Shakey Text</div>
+
+    <div class="canto-cfg-row">
+      <label>Enable Shakey Text</label>
+      <input type="checkbox" name="shakeyText" class="canto-cfg-checkbox" {{#if shakeyText}}checked{{/if}}>
+    </div>
+    <div class="canto-cfg-row">
+      <label>Shake Intensity (1–10)</label>
+      <input type="number" name="shakeIntensity" class="canto-cfg-input" value="{{shakeIntensity}}" min="1" max="10">
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="canto-cfg-footer">
+    <button type="submit" class="canto-cfg-btn-submit">♪ Save Configuration</button>
+  </div>
+
+</form>
+
+<script>
+  /* Live JSON validation */
+  function cantoValidateLyrics(textarea) {
+    var err = document.getElementById('canto-lyric-error');
+    try {
+      var v = JSON.parse(textarea.value);
+      if (!Array.isArray(v)) throw new Error("Must be a JSON array [ ... ]");
+      err.textContent = '';
+      err.classList.remove('visible');
+      textarea.style.borderColor = '';
+    } catch(e) {
+      err.textContent = '⚠ ' + e.message;
+      err.classList.add('visible');
+      textarea.style.borderColor = '#e85555';
+    }
+  }
+
+  /* ── Source mode switching ── */
+  function cantoSetMode(mode, btn) {
+    // toggle tab styles
+    document.querySelectorAll('.canto-mode-tab').forEach(function(t) { t.classList.remove('active'); });
+    btn.classList.add('active');
+    // toggle panels
+    document.querySelectorAll('.canto-mode-panel').forEach(function(p) { p.classList.remove('visible'); });
+    document.getElementById('canto-mode-' + mode).classList.add('visible');
+    // if switching to URL mode, clear the hidden playlist select
+    if (mode === 'url') {
+      var sel = document.getElementById('canto-playlist-select');
+      if (sel) sel.value = '';
+    }
+    // if switching to playlist mode, clear the URL input
+    if (mode === 'playlist') {
+      var url = document.querySelector('[name="songUrl"]');
+      if (url) url.value = '';
+    }
+  }
+
+  /* ── LRC parser ── */
+  function cantoLrcToJson(lrcText) {
+    var lines = lrcText.split('\n');
+    var results = [];
+    var tagRe = /\[(\d{1,3}):(\d{2})[.:,](\d{1,3})\]/g;
+    var metaRe = /^\[(ar|ti|al|by|offset|re|ve|length|#):/i;
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i].trim();
+      if (!line || metaRe.test(line)) continue;
+      var tags = [];
+      var match;
+      tagRe.lastIndex = 0;
+      while ((match = tagRe.exec(line)) !== null) {
+        var mins = parseInt(match[1], 10);
+        var secs = parseInt(match[2], 10);
+        var frac = match[3];
+        var fracSec = frac.length <= 2 ? parseInt(frac,10)/100 : parseInt(frac,10)/1000;
+        tags.push(mins * 60 + secs + fracSec);
+      }
+      var text = line.replace(/\[\d{1,3}:\d{2}[.:,]\d{1,3}\]/g, '').trim();
+      if (!text) continue;
+      for (var j = 0; j < tags.length; j++)
+        results.push({ t: Math.round(tags[j]*100)/100, text: text });
+    }
+    results.sort(function(a,b){ return a.t - b.t; });
+    return results;
+  }
+
+  function cantoApplyLrc(lrcText, filename) {
+    var parsed = cantoLrcToJson(lrcText);
+    var status = document.getElementById('canto-lrc-status');
+    if (parsed.length === 0) {
+      status.style.color = '#e85555';
+      status.textContent = '⚠ No timed lines found in ' + filename + '. Is it a valid .lrc file?';
+      status.style.display = 'block';
+      return;
+    }
+    var ta = document.getElementById('canto-lyrics-editor');
+    ta.value = JSON.stringify(parsed, null, 2);
+    cantoValidateLyrics(ta);
+    status.style.color = '#7ec87e';
+    status.textContent = '✓ Imported ' + parsed.length + ' lines from ' + filename;
+    status.style.display = 'block';
+  }
+
+  function cantoHandleLrcFile(file) {
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(e) { cantoApplyLrc(e.target.result, file.name); };
+    reader.readAsText(file, 'UTF-8');
+  }
+
+  function cantoHandleLrcDrop(event) {
+    event.preventDefault();
+    document.getElementById('canto-lrc-dropzone').classList.remove('drag-over');
+    var file = event.dataTransfer.files[0];
+    if (file) cantoHandleLrcFile(file);
+  }
+
+  (function() {
+    var dz = document.getElementById('canto-lrc-dropzone');
+    if (dz) dz.addEventListener('click', function() {
+      document.getElementById('canto-lrc-file-input').click();
+    });
+  })();
+
+  /* On open: fix custom font dropdown */
+  (function() {
+    var preset  = document.getElementById('canto-font-preset');
+    var wrap    = document.getElementById('canto-custom-font-wrap');
+    var input   = document.getElementById('canto-custom-font-input');
+    var hidden  = document.getElementById('canto-font-family-value');
+    var known   = Array.from(preset.options).map(function(o){ return o.value; });
+    var saved   = hidden.value;
+    if (saved && !known.includes(saved)) {
+      preset.value  = '__custom__';
+      input.value   = saved;
+      wrap.style.display = 'flex';
+    }
+    /* Run initial validation */
+    var ta = document.getElementById('canto-lyrics-editor');
+    if (ta) cantoValidateLyrics(ta);
+  })();
+</script>

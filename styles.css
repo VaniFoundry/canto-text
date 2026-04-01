@@ -1,0 +1,303 @@
+/* =====================================================
+   CANTO TEXT — styles
+   Overlay + text elements mirroring abno-text
+   ===================================================== */
+
+.canto-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.canto-text {
+  user-select: none;
+  pointer-events: none;
+  transition: transform 0.2s ease;
+  line-height: 1.3;
+}
+
+/* =====================================================
+   CONFIG WINDOW
+   ===================================================== */
+
+#canto-text-config .window-content {
+  background: linear-gradient(135deg, #0d0d1a 0%, #1a1020 100%) !important;
+  padding: 12px 16px !important;
+}
+
+#canto-text-config .canto-cfg-container,
+#canto-text-config .canto-cfg-container * {
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+#canto-text-config .canto-cfg-container {
+  color: #ddd4f0 !important;
+}
+
+#canto-text-config .canto-cfg-header {
+  color: #b08fe8 !important;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: bold !important;
+  font-size: 11px !important;
+  margin-bottom: 12px !important;
+  margin-top: 0 !important;
+  padding-bottom: 8px !important;
+  border-bottom: 1px solid #3d2f5a !important;
+  background: transparent !important;
+}
+
+#canto-text-config .canto-cfg-divider {
+  height: 1px !important;
+  background: #3d2f5a !important;
+  margin: 16px 0 !important;
+  border: none !important;
+}
+
+#canto-text-config .canto-cfg-section {
+  margin-bottom: 16px !important;
+}
+
+#canto-text-config .canto-cfg-row {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin-bottom: 8px !important;
+  gap: 12px !important;
+}
+
+#canto-text-config .canto-cfg-container label,
+#canto-text-config .canto-cfg-row label {
+  color: #ddd4f0 !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.4px !important;
+  flex: 1 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-shadow: none !important;
+  background: transparent !important;
+}
+
+#canto-text-config .canto-cfg-hint {
+  font-size: 10px !important;
+  color: #6a5a8a !important;
+  margin-top: -4px !important;
+  margin-bottom: 10px !important;
+  font-style: italic !important;
+}
+
+#canto-text-config .canto-cfg-textarea {
+  width: 100% !important;
+  display: block !important;
+  margin-top: 6px !important;
+  resize: vertical !important;
+  background: #0a0a14 !important;
+  border: 1px solid #3d2f5a !important;
+  color: #ddd4f0 !important;
+  padding: 8px 10px !important;
+  font-size: 12px !important;
+  font-family: 'Consolas', 'Courier New', monospace !important;
+  line-height: 1.5 !important;
+  border-radius: 0 !important;
+}
+
+#canto-text-config .canto-cfg-textarea:focus {
+  outline: none !important;
+  border-color: #b08fe8 !important;
+}
+
+#canto-text-config .canto-cfg-input {
+  background: #0a0a14 !important;
+  border: 1px solid #3d2f5a !important;
+  color: #ddd4f0 !important;
+  padding: 5px 8px !important;
+  font-size: 12px !important;
+  border-radius: 0 !important;
+  flex: 0.7 !important;
+  min-width: 0 !important;
+  text-align: right !important;
+  height: auto !important;
+}
+
+#canto-text-config .canto-cfg-input:focus {
+  outline: none !important;
+  border-color: #b08fe8 !important;
+  box-shadow: none !important;
+}
+
+#canto-text-config .canto-cfg-input-wide {
+  background: #0a0a14 !important;
+  border: 1px solid #3d2f5a !important;
+  color: #ddd4f0 !important;
+  padding: 5px 8px !important;
+  font-size: 12px !important;
+  border-radius: 0 !important;
+  flex: 2 !important;
+  min-width: 0 !important;
+  height: auto !important;
+}
+
+#canto-text-config .canto-cfg-input-wide:focus {
+  outline: none !important;
+  border-color: #b08fe8 !important;
+  box-shadow: none !important;
+}
+
+#canto-text-config .canto-cfg-color-swatch {
+  flex: 0 0 36px !important;
+  height: 28px !important;
+  padding: 2px 3px !important;
+  border: 1px solid #3d2f5a !important;
+  background: #0a0a14 !important;
+  cursor: pointer !important;
+  border-radius: 0 !important;
+}
+
+#canto-text-config .canto-cfg-color-hex {
+  flex: 1 !important;
+  background: #0a0a14 !important;
+  border: 1px solid #3d2f5a !important;
+  color: #ddd4f0 !important;
+  padding: 5px 8px !important;
+  font-size: 11px !important;
+  font-family: monospace !important;
+  text-align: left !important;
+  border-radius: 0 !important;
+  height: auto !important;
+}
+
+#canto-text-config .canto-cfg-color-hex:focus {
+  outline: none !important;
+  border-color: #b08fe8 !important;
+  box-shadow: none !important;
+}
+
+#canto-text-config .canto-cfg-color-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  flex: 0.9 !important;
+}
+
+#canto-text-config .canto-cfg-select {
+  background: #0a0a14 !important;
+  border: 1px solid #3d2f5a !important;
+  color: #ddd4f0 !important;
+  padding: 5px 28px 5px 8px !important;
+  font-size: 12px !important;
+  border-radius: 0 !important;
+  flex: 1.2 !important;
+  cursor: pointer !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236a5a8a'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 10px center !important;
+  height: auto !important;
+}
+
+#canto-text-config .canto-cfg-select:focus {
+  outline: none !important;
+  border-color: #b08fe8 !important;
+  box-shadow: none !important;
+}
+
+#canto-text-config .canto-cfg-checkbox {
+  flex: 0 0 auto !important;
+  width: 16px !important;
+  height: 16px !important;
+  accent-color: #b08fe8 !important;
+  cursor: pointer !important;
+  margin: 0 !important;
+}
+
+#canto-text-config .canto-cfg-footer {
+  margin-top: 20px !important;
+}
+
+#canto-text-config .canto-cfg-btn-submit {
+  width: 100% !important;
+  padding: 10px !important;
+  border: 1px solid #5a3a8a !important;
+  background: #2a1a4a !important;
+  color: #ddd4f0 !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+  cursor: pointer !important;
+  border-radius: 2px !important;
+}
+
+#canto-text-config .canto-cfg-btn-submit:hover {
+  border-color: #b08fe8 !important;
+  color: #b08fe8 !important;
+}
+
+#canto-text-config .canto-lyric-error {
+  color: #e85555 !important;
+  font-size: 11px !important;
+  margin-top: 4px !important;
+  display: none !important;
+}
+
+/* ---- source mode tabs ---- */
+.canto-mode-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 14px;
+  border-bottom: 2px solid #3d2f5a;
+}
+
+.canto-mode-tab {
+  padding: 7px 18px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  color: #6a5a8a;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.canto-mode-tab:hover { color: #ddd4f0; }
+
+.canto-mode-tab.active {
+  color: #b08fe8;
+  border-bottom-color: #b08fe8;
+}
+
+.canto-mode-panel { display: none; }
+.canto-mode-panel.visible { display: block; }
+
+/* ---- LRC drop zone ---- */
+#canto-lrc-dropzone {
+  border: 2px dashed #3d2f5a;
+  padding: 18px 12px;
+  text-align: center;
+  cursor: pointer;
+  color: #6a5a8a;
+  font-size: 12px;
+  transition: border-color 0.15s, color 0.15s;
+  user-select: none;
+}
+
+#canto-lrc-dropzone:hover,
+#canto-lrc-dropzone.drag-over {
+  border-color: #b08fe8;
+  color: #b08fe8;
+}
+
+#canto-lrc-dropzone strong {
+  color: #b08fe8;
+}
+
