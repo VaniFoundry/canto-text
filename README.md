@@ -1,4 +1,5 @@
 # Canto Text
+**Manifest URL:** `https://raw.githubusercontent.com/VaniFoundry/canto-text/main/module.json`
 
 A Foundry VTT module that syncs lyric text to a playing song, displaying each line as screen-floating abno-text — inspired by the Canto fights in **Limbus Company**.
 
